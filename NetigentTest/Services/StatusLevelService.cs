@@ -2,6 +2,7 @@
 using NetigentTest.Models.BindingModels;
 using NetigentTest.Models.DBModels;
 
+namespace NetigentTest.Services;
 public class StatusLevelService : APIService
 {
     public StatusLevelService(AppDbContext dbContext, ILogger<APIService> logger) : base(dbContext, logger) { }

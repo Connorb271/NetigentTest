@@ -6,15 +6,17 @@ namespace NetigentTest.Models.DBModels
     public class Inquiry
     {
         public int Id { get; set; }
-        public int AppProjectId { get; set; }
+        [Column("ApplicationId")]
+        public int? AppProjectId { get; set; }
         public AppProject? AppProject { get; set; }
-        public string SendToPerson { get; set; } = string.Empty;
-        public string SendToRole { get; set; } = string.Empty;
-        public int SendToPersonId { get; set; } = 0;
-        public string Subject { get; set; } = string.Empty;
-        public string InquiryText { get; set; } = string.Empty;
-        public string Response { get; set; } = string.Empty;
-        public DateTime AskedDt { get; set; } = DateTime.MinValue;
-        public DateTime CompletedDt { get; set; } = DateTime.MinValue;
+        public string? SendToPerson { get; set; }
+        public string? SendToRole { get; set; }
+        public int? SendToPersonId { get; set; }
+        public string? Subject { get; set; }
+        [Column("Inquiry")]
+        public string? InquiryText { get; set; }
+        public string? Response { get; set; }
+        public DateTime? AskedDt { get; set; }
+        public DateTime? CompletedDt { get; set; }
     }
 }

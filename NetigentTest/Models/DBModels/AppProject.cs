@@ -6,19 +6,19 @@ namespace NetigentTest.Models.DBModels
     public class AppProject
     {
         public int Id { get; set; }
-        public string AppStatus { get; set; } = string.Empty;
-        public string ProjectRef { get; set; } = string.Empty;
-        public string ProjectName { get; set; } = string.Empty;
-        public string ProjectLocation { get; set; } = string.Empty;
-        public DateTime OpenDt { get; set; } = DateTime.MinValue;
-        public DateTime StartDt { get; set; } = DateTime.MinValue;
-        public DateTime CompletedDt { get; set; } = DateTime.MinValue;
-        public decimal ProjectValue { get; set; } = 0;
-        public int StatusId { get; set; }
+        public string? AppStatus { get; set; }
+        public string? ProjectRef { get; set; }
+        public string? ProjectName { get; set; }
+        public string? ProjectLocation { get; set; }
+        public DateTime? OpenDt { get; set; }
+        public DateTime? StartDt { get; set; }
+        public DateTime? CompletedDt { get; set; }
+        public decimal? ProjectValue { get; set; }
+        public int? StatusId { get; set; }
         public StatusLevel? StatusLevel { get; set; }
-        public string Notes { get; set; } = string.Empty;
-        public DateTime Modified { get; set; } = DateTime.MinValue;
-        public bool IsDeleted { get; set; } = false;
-        public ICollection<Inquiry> Inquiries { get; set; } = new List<Inquiry>();
+        public string? Notes { get; set; }
+        public DateTime? Modified { get; set; }
+        public bool IsDeleted { get; set; }
+        public ICollection<Inquiry>? Inquiries { get; set; }
     }
 }
