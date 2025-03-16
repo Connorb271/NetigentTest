@@ -11,7 +11,7 @@ namespace NetigentTest.Controllers
     {
         private readonly IAppProjectService _appProjectService;
 
-        public AppProjectController(AppProjectService appProjectService)
+        public AppProjectController(IAppProjectService appProjectService)
         {
             _appProjectService = appProjectService;
         }

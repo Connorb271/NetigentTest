@@ -11,7 +11,7 @@ namespace NetigentTest.Controllers
     {
         private readonly IInquiryService _inquiryService;
 
-        public InquiryController(InquiryService inquiryService)
+        public InquiryController(IInquiryService inquiryService)
         {
             _inquiryService = inquiryService;
         }

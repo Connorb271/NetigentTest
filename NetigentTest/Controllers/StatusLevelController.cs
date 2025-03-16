@@ -11,7 +11,7 @@ namespace NetigentTest.Controllers
     {
         private readonly IStatusLevelService _statusLevelService;
 
-        public StatusLevelController(StatusLevelService statusLevelService)
+        public StatusLevelController(IStatusLevelService statusLevelService)
         {
             _statusLevelService = statusLevelService;
         }
