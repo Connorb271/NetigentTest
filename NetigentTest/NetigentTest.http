@@ -1,0 +1,6 @@
+@NetigentTest_HostAddress = http://localhost:5183
+
+GET {{NetigentTest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
