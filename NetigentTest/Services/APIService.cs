@@ -6,8 +6,8 @@ using NetigentTest.Models.DBModels;
 
 public class APIService
 {
-    private readonly AppDbContext _dbContext;
-    private readonly ILogger<APIService> _logger;
+    public readonly AppDbContext _dbContext;
+    public readonly ILogger<APIService> _logger;
 
     public APIService(AppDbContext dbContext, ILogger<APIService> logger)
     {
@@ -30,6 +30,4 @@ public class APIService
         File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
         _logger.LogError(logMessage);
     }
-
-    protected AppDbContext DbContext => _dbContext;
 }
