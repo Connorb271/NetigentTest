@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NetigentTest.Models.BindingModels;
 using NetigentTest.Models.DBModels;
+using NetigentTest.Models.ViewModels;
 
 namespace NetigentTest.Services;
 public interface IAppProjectService
@@ -8,8 +9,8 @@ public interface IAppProjectService
     Task<AppProject> CreateAsync(CreateAppProjectBindingModel model);
     Task<AppProject> EditAsync(EditAppProjectBindingModel model);
     Task<bool> DeleteAsync(int id);
-    Task<AppProject> GetAsync(int id);
-    Task<List<AppProject>> GetAsync();
+    Task<AppProjectIndividualViewModel> GetAsync(int id);
+    Task<List<AppProjectSearchViewModel>> GetAsync();
 }
 public class AppProjectService : APIService, IAppProjectService
 {
@@ -19,19 +20,33 @@ public class AppProjectService : APIService, IAppProjectService
     {
         try
         {
+            var openDt = new DateTime();
+            var startDt = new DateTime();
+            var completedDt = new DateTime();
+            if (!DateTime.TryParse(model.OpenDt, out openDt))
+                throw new ArgumentException($"Invalid open date format: {model.OpenDt}");
+
+            if (!DateTime.TryParse(model.StartDt, out startDt))
+                throw new ArgumentException($"Invalid start date format: {model.StartDt}");
+
+            if (!DateTime.TryParse(model.CompletedDt, out completedDt))
+                throw new ArgumentException($"Invalid completed date format: {model.CompletedDt}");
+
+            
+
             var appProject = new AppProject
             {
                 AppStatus = model.AppStatus,
                 ProjectRef = model.ProjectRef,
                 ProjectName = model.ProjectName,
                 ProjectLocation = model.ProjectLocation,
-                OpenDt = model.OpenDt,
-                StartDt = model.StartDt,
-                CompletedDt = model.CompletedDt,
+                OpenDt = openDt,
+                StartDt = startDt,
+                CompletedDt = completedDt,
                 ProjectValue = model.ProjectValue,
                 StatusId = model.StatusId,
                 Notes = model.Notes,
-                Modified = model.Modified,
+                Modified = DateTime.UtcNow,
                 IsDeleted = model.IsDeleted
             };
 
@@ -46,6 +61,8 @@ public class AppProjectService : APIService, IAppProjectService
         }
     }
 
+
+
     public async Task<AppProject> EditAsync(EditAppProjectBindingModel model)
     {
         try
@@ -53,17 +70,30 @@ public class AppProjectService : APIService, IAppProjectService
             var existingAppProject = await _dbContext.AppProjects.FindAsync(model.Id);
             if (existingAppProject == null) return null;
 
+            var openDt = new DateTime();
+            var startDt = new DateTime();
+            var completedDt = new DateTime();
+
+            if (!DateTime.TryParse(model.OpenDt, out openDt))
+                throw new ArgumentException($"Invalid open date format: {model.OpenDt}");
+
+            if (!DateTime.TryParse(model.StartDt, out startDt))
+                throw new ArgumentException($"Invalid start date format: {model.StartDt}");
+
+            if (!DateTime.TryParse(model.CompletedDt, out completedDt))
+                throw new ArgumentException($"Invalid completed date format: {model.CompletedDt}");
+
             existingAppProject.AppStatus = model.AppStatus;
             existingAppProject.ProjectRef = model.ProjectRef;
             existingAppProject.ProjectName = model.ProjectName;
             existingAppProject.ProjectLocation = model.ProjectLocation;
-            existingAppProject.OpenDt = model.OpenDt;
-            existingAppProject.StartDt = model.StartDt;
-            existingAppProject.CompletedDt = model.CompletedDt;
+            existingAppProject.OpenDt = openDt;
+            existingAppProject.StartDt = startDt;
+            existingAppProject.CompletedDt = completedDt;
             existingAppProject.ProjectValue = model.ProjectValue;
             existingAppProject.StatusId = model.StatusId;
             existingAppProject.Notes = model.Notes;
-            existingAppProject.Modified = model.Modified;
+            existingAppProject.Modified = DateTime.UtcNow;
             existingAppProject.IsDeleted = model.IsDeleted;
 
             await _dbContext.SaveChangesAsync();
@@ -76,6 +106,7 @@ public class AppProjectService : APIService, IAppProjectService
         }
     }
 
+
     public async Task<bool> DeleteAsync(int id)
     {
         try
@@ -83,7 +114,7 @@ public class AppProjectService : APIService, IAppProjectService
             var appProject = await _dbContext.AppProjects.FindAsync(id);
             if (appProject == null) return false;
 
-            appProject.IsDeleted = true; // Soft delete
+            appProject.IsDeleted = true;
             await _dbContext.SaveChangesAsync();
             return true;
         }
@@ -94,13 +125,34 @@ public class AppProjectService : APIService, IAppProjectService
         }
     }
 
-    public async Task<AppProject> GetAsync(int id)
+    public async Task<AppProjectIndividualViewModel> GetAsync(int id)
     {
         try
         {
             var appProject = await _dbContext.AppProjects
                 .Include(a => a.StatusLevel)
-                .FirstOrDefaultAsync(a => a.Id == id);
+                .Include(a => a.Inquiries)
+                .Where(a => a.Id == id)
+                .Select(e => new AppProjectIndividualViewModel()
+                {
+                    Id = e.Id,
+                    AppStatus = e.AppStatus,
+                    ProjectRef = e.ProjectRef,
+                    ProjectName = e.ProjectName,
+                    ProjectLocation = e.ProjectLocation,
+                    OpenDt = e.OpenDt,
+                    StartDt = e.StartDt,
+                    CompletedDt = e.CompletedDt,
+                    ProjectValue = e.ProjectValue ?? 0,
+                    StatusId = e.StatusId ?? 0,
+                    StatusLevel = e.StatusLevel != null ? e.StatusLevel.StatusName : string.Empty,
+                    Notes = e.Notes,
+                    Modified = e.Modified,
+                    IsDeleted = e.IsDeleted,
+                    InquiriesCount = e.Inquiries != null ? e.Inquiries.Count() : 0
+                })
+                .FirstOrDefaultAsync();
+
             return appProject;
         }
         catch (Exception ex)
@@ -110,13 +162,21 @@ public class AppProjectService : APIService, IAppProjectService
         }
     }
 
-    public async Task<List<AppProject>> GetAsync()
+    public async Task<List<AppProjectSearchViewModel>> GetAsync()
     {
         try
         {
             var appProjects = await _dbContext.AppProjects
                 .Include(a => a.StatusLevel)
                 .Where(a => !a.IsDeleted)
+                .Select(e=> new AppProjectSearchViewModel() 
+                {
+                    Id = e.Id,
+                    Location = e.ProjectLocation,
+                    Name = e.ProjectName,
+                    Reference = e.ProjectRef,
+                    StatusLevel = e.StatusLevel.StatusName
+                })
                 .ToListAsync();
             return appProjects;
         }

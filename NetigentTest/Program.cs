@@ -22,11 +22,27 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
     });
 
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173")  // The frontend URL
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 app.UseHttpsRedirection();
+
+// Use CORS policy
+app.UseCors("AllowLocalhost");
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
