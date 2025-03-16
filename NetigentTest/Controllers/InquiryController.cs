@@ -9,7 +9,7 @@ namespace NetigentTest.Controllers
     [ApiController]
     public class InquiryController : ControllerBase
     {
-        private readonly InquiryService _inquiryService;
+        private readonly IInquiryService _inquiryService;
 
         public InquiryController(InquiryService inquiryService)
         {
@@ -43,7 +43,7 @@ namespace NetigentTest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Inquiry>> GetOne(int id)
         {
-            var inquiry = await _inquiryService.GetOneAsync(id);
+            var inquiry = await _inquiryService.GetAsync(id);
             if (inquiry == null) return NotFound();
             return Ok(inquiry);
         }
@@ -51,7 +51,7 @@ namespace NetigentTest.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Inquiry>>> GetAll()
         {
-            var inquiries = await _inquiryService.GetAllAsync();
+            var inquiries = await _inquiryService.GetAsync();
             return Ok(inquiries);
         }
     }

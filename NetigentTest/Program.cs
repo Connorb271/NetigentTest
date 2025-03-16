@@ -11,9 +11,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 // Register services
-builder.Services.AddScoped<StatusLevelService>();
-builder.Services.AddScoped<InquiryService>();
-builder.Services.AddScoped<AppProjectService>();
+builder.Services.AddScoped<IStatusLevelService, StatusLevelService>();
+builder.Services.AddScoped<IInquiryService, InquiryService>();
+builder.Services.AddScoped<IAppProjectService, AppProjectService>();
 
 // Add controllers with JSON serialization options to handle circular references
 builder.Services.AddControllers()

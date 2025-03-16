@@ -3,7 +3,15 @@ using NetigentTest.Models.BindingModels;
 using NetigentTest.Models.DBModels;
 
 namespace NetigentTest.Services;
-public class StatusLevelService : APIService
+public interface IStatusLevelService
+{
+    Task<StatusLevel> CreateAsync(CreateStatusLevelBindingModel model);
+    Task<StatusLevel> EditAsync(EditStatusLevelBindingModel model);
+    Task<bool> DeleteAsync(int id);
+    Task<StatusLevel> GetAsync(int id);
+    Task<List<StatusLevel>> GetAsync();
+}
+public class StatusLevelService : APIService, IStatusLevelService
 {
     public StatusLevelService(AppDbContext dbContext, ILogger<APIService> logger) : base(dbContext, logger) { }
 
@@ -63,7 +71,7 @@ public class StatusLevelService : APIService
         }
     }
 
-    public async Task<StatusLevel> GetOneAsync(int id)
+    public async Task<StatusLevel> GetAsync(int id)
     {
         try
         {
@@ -74,12 +82,12 @@ public class StatusLevelService : APIService
         }
         catch (Exception ex)
         {
-            Log($"Error fetching StatusLevel with Id {id}: {ex.Message}", nameof(GetOneAsync), nameof(StatusLevelService));
+            Log($"Error fetching StatusLevel with Id {id}: {ex.Message}", nameof(GetAsync), nameof(StatusLevelService));
             throw;
         }
     }
 
-    public async Task<List<StatusLevel>> GetAllAsync()
+    public async Task<List<StatusLevel>> GetAsync()
     {
         try
         {
@@ -88,7 +96,7 @@ public class StatusLevelService : APIService
         }
         catch (Exception ex)
         {
-            Log($"Error fetching all StatusLevels: {ex.Message}", nameof(GetAllAsync), nameof(StatusLevelService));
+            Log($"Error fetching all StatusLevels: {ex.Message}", nameof(GetAsync), nameof(StatusLevelService));
             throw;
         }
     }

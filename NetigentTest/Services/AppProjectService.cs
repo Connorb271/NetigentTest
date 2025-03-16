@@ -3,7 +3,15 @@ using NetigentTest.Models.BindingModels;
 using NetigentTest.Models.DBModels;
 
 namespace NetigentTest.Services;
-public class AppProjectService : APIService
+public interface IAppProjectService
+{
+    Task<AppProject> CreateAsync(CreateAppProjectBindingModel model);
+    Task<AppProject> EditAsync(EditAppProjectBindingModel model);
+    Task<bool> DeleteAsync(int id);
+    Task<AppProject> GetAsync(int id);
+    Task<List<AppProject>> GetAsync();
+}
+public class AppProjectService : APIService, IAppProjectService
 {
     public AppProjectService(AppDbContext dbContext, ILogger<APIService> logger) : base(dbContext, logger) { }
 
@@ -86,7 +94,7 @@ public class AppProjectService : APIService
         }
     }
 
-    public async Task<AppProject> GetOneAsync(int id)
+    public async Task<AppProject> GetAsync(int id)
     {
         try
         {
@@ -97,12 +105,12 @@ public class AppProjectService : APIService
         }
         catch (Exception ex)
         {
-            Log($"Error fetching AppProject with Id {id}: {ex.Message}", nameof(GetOneAsync), nameof(AppProjectService));
+            Log($"Error fetching AppProject with Id {id}: {ex.Message}", nameof(GetAsync), nameof(AppProjectService));
             throw;
         }
     }
 
-    public async Task<List<AppProject>> GetAllAsync()
+    public async Task<List<AppProject>> GetAsync()
     {
         try
         {
@@ -114,7 +122,7 @@ public class AppProjectService : APIService
         }
         catch (Exception ex)
         {
-            Log($"Error fetching all AppProjects: {ex.Message}", nameof(GetAllAsync), nameof(AppProjectService));
+            Log($"Error fetching all AppProjects: {ex.Message}", nameof(GetAsync), nameof(AppProjectService));
             throw;
         }
     }

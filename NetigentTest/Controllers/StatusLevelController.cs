@@ -9,7 +9,7 @@ namespace NetigentTest.Controllers
     [ApiController]
     public class StatusLevelController : ControllerBase
     {
-        private readonly StatusLevelService _statusLevelService;
+        private readonly IStatusLevelService _statusLevelService;
 
         public StatusLevelController(StatusLevelService statusLevelService)
         {
@@ -43,7 +43,7 @@ namespace NetigentTest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StatusLevel>> GetOne(int id)
         {
-            var statusLevel = await _statusLevelService.GetOneAsync(id);
+            var statusLevel = await _statusLevelService.GetAsync(id);
             if (statusLevel == null) return NotFound();
             return Ok(statusLevel);
         }
@@ -51,7 +51,7 @@ namespace NetigentTest.Controllers
         [HttpGet]
         public async Task<ActionResult<List<StatusLevel>>> GetAll()
         {
-            var statusLevels = await _statusLevelService.GetAllAsync();
+            var statusLevels = await _statusLevelService.GetAsync();
             return Ok(statusLevels);
         }
     }

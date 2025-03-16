@@ -9,7 +9,7 @@ namespace NetigentTest.Controllers
     [ApiController]
     public class AppProjectController : ControllerBase
     {
-        private readonly AppProjectService _appProjectService;
+        private readonly IAppProjectService _appProjectService;
 
         public AppProjectController(AppProjectService appProjectService)
         {
@@ -43,7 +43,7 @@ namespace NetigentTest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<AppProject>> GetOne(int id)
         {
-            var appProject = await _appProjectService.GetOneAsync(id);
+            var appProject = await _appProjectService.GetAsync(id);
             if (appProject == null) return NotFound();
             return Ok(appProject);
         }
@@ -51,7 +51,7 @@ namespace NetigentTest.Controllers
         [HttpGet]
         public async Task<ActionResult<List<AppProject>>> GetAll()
         {
-            var appProjects = await _appProjectService.GetAllAsync();
+            var appProjects = await _appProjectService.GetAsync();
             return Ok(appProjects);
         }
     }
