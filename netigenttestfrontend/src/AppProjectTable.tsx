@@ -102,6 +102,7 @@ const ProjectPage: React.FC = () => {
                 <Table striped bordered hover responsive>
                     <thead>
                         <tr>
+                            <th>Id</th>
                             <th>Name</th>
                             <th>Reference</th>
                             <th>Location</th>
@@ -112,6 +113,7 @@ const ProjectPage: React.FC = () => {
                     <tbody>
                         {projects.map(project => (
                             <tr key={project.id}>
+                                <td>{project.id}</td>
                                 <td>{project.name}</td>
                                 <td>{project.reference}</td>
                                 <td>{project.location}</td>

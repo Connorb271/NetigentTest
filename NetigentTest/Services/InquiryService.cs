@@ -23,14 +23,14 @@ public class InquiryService : APIService, IInquiryService
             var inquiry = new Inquiry
             {
                 AppProjectId = model.AppProjectId,
-                SendToPerson = model.SendToPerson,
-                SendToRole = model.SendToRole,
-                SendToPersonId = model.SendToPersonId,
+                SendToPerson = "Person",
+                SendToRole = "Role",
+                SendToPersonId = 0,
                 Subject = model.Subject,
                 InquiryText = model.InquiryText,
-                Response = model.Response,
-                AskedDt = model.AskedDt,
-                CompletedDt = model.CompletedDt
+                Response = "",
+                AskedDt = DateTime.UtcNow,
+                CompletedDt = null
             };
 
             await _dbContext.Inquiries.AddAsync(inquiry);
