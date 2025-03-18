@@ -32,7 +32,7 @@ public class AppProjectService : APIService, IAppProjectService
             if (!DateTime.TryParse(model.CompletedDt, out completedDt))
                 throw new ArgumentException($"Invalid completed date format: {model.CompletedDt}");
 
-            
+
 
             var appProject = new AppProject
             {
@@ -179,7 +179,7 @@ public class AppProjectService : APIService, IAppProjectService
             var appProjects = await _dbContext.AppProjects
                 .Include(a => a.StatusLevel)
                 .Where(a => !a.IsDeleted)
-                .Select(e=> new AppProjectSearchViewModel() 
+                .Select(e => new AppProjectSearchViewModel()
                 {
                     Id = e.Id,
                     Location = e.ProjectLocation,

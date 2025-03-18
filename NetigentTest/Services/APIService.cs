@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using NetigentTest.Models.DBModels;
+﻿using NetigentTest.Models.DBModels;
 
 public class APIService
 {
