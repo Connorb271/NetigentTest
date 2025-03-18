@@ -6,8 +6,8 @@ using NetigentTest.Models.ViewModels;
 namespace NetigentTest.Services;
 public interface IAppProjectService
 {
-    Task<AppProject> CreateAsync(CreateAppProjectBindingModel model);
-    Task<AppProject> EditAsync(EditAppProjectBindingModel model);
+    Task<AppProject> CreateAsync(CreateEditAppProjectBindingModel model);
+    Task<AppProject> EditAsync(CreateEditAppProjectBindingModel model);
     Task<bool> DeleteAsync(int id);
     Task<AppProjectIndividualViewModel> GetAsync(int id);
     Task<List<AppProjectSearchViewModel>> GetAsync();
@@ -16,7 +16,7 @@ public class AppProjectService : APIService, IAppProjectService
 {
     public AppProjectService(AppDbContext dbContext, ILogger<APIService> logger) : base(dbContext, logger) { }
 
-    public async Task<AppProject> CreateAsync(CreateAppProjectBindingModel model)
+    public async Task<AppProject> CreateAsync(CreateEditAppProjectBindingModel model)
     {
         try
         {
@@ -63,7 +63,7 @@ public class AppProjectService : APIService, IAppProjectService
 
 
 
-    public async Task<AppProject> EditAsync(EditAppProjectBindingModel model)
+    public async Task<AppProject> EditAsync(CreateEditAppProjectBindingModel model)
     {
         try
         {
@@ -145,11 +145,21 @@ public class AppProjectService : APIService, IAppProjectService
                     CompletedDt = e.CompletedDt,
                     ProjectValue = e.ProjectValue ?? 0,
                     StatusId = e.StatusId ?? 0,
-                    StatusLevel = e.StatusLevel != null ? e.StatusLevel.StatusName : string.Empty,
                     Notes = e.Notes,
-                    Modified = e.Modified,
-                    IsDeleted = e.IsDeleted,
-                    InquiriesCount = e.Inquiries != null ? e.Inquiries.Count() : 0
+                    Inquiries = e.Inquiries != null
+                    ? e.Inquiries.Select(i => new InquiryViewModel
+                    {
+                        Id = i.Id,
+                        SendToPerson = i.SendToPerson,
+                        SendToRole = i.SendToRole,
+                        SendToPersonId = i.SendToPersonId,
+                        Subject = i.Subject,
+                        InquiryText = i.InquiryText,
+                        Response = i.Response,
+                        AskedDt = i.AskedDt,
+                        CompletedDt = i.CompletedDt
+                    }).ToList()
+                    : new List<InquiryViewModel>()
                 })
                 .FirstOrDefaultAsync();
 

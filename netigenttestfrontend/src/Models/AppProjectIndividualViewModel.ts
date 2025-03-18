@@ -15,4 +15,17 @@ export interface AppProjectIndividualViewModel {
     modified?: string;
     isDeleted: boolean;
     inquiriesCount: number;
+    inquiries?: InquiryViewModel[];
+}
+
+export interface InquiryViewModel {
+    id: number;
+    sendToPerson?: string;
+    sendToRole?: string;
+    sendToPersonId?: number;
+    subject?: string;
+    inquiryText?: string;
+    response?: string;
+    askedDt?: string;
+    completedDt?: string;
 }

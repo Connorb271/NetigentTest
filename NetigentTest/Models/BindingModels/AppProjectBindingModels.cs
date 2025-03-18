@@ -2,8 +2,9 @@
 
 namespace NetigentTest.Models.BindingModels
 {
-    public class CreateAppProjectBindingModel
+    public class CreateEditAppProjectBindingModel
     {
+        public int Id { get; set; }
         public string AppStatus { get; set; } = string.Empty;
         public string ProjectRef { get; set; } = string.Empty;
         public string ProjectName { get; set; } = string.Empty;
@@ -15,10 +16,5 @@ namespace NetigentTest.Models.BindingModels
         public int StatusId { get; set; }
         public string Notes { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
-    }
-
-    public class EditAppProjectBindingModel : CreateAppProjectBindingModel
-    {
-        public int Id { get; set; }
     }
 }

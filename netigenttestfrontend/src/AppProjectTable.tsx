@@ -1,101 +1,145 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, Spinner, Card, Button } from "react-bootstrap";
-import { AppProject } from "./Models/AppProject";
-import { AppProjectIndividualViewModel } from "./Models/AppProjectIndividualViewModel";
-import EditProjectModal from "./EditProjectModal";
+import { Button, Table, Container, Modal } from "react-bootstrap";
+import ApplicationProjectModal from './ApplicationProjectModal'; // Import the modal
 
-const AppProjectTable = () => {
-    const [projects, setProjects] = useState<AppProject[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [selectedProject, setSelectedProject] = useState<AppProjectIndividualViewModel | null>(null);
-    const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+interface AppProjectSearchViewModel {
+    id: number;
+    name: string | null;
+    reference: string | null;
+    location: string | null;
+    statusLevel: string | null;
+}
+
+const ProjectPage: React.FC = () => {
+    const [projects, setProjects] = useState<AppProjectSearchViewModel[]>([]);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [projectToDelete, setProjectToDelete] = useState<AppProjectSearchViewModel | null>(null);
+    const [projectToEdit, setProjectToEdit] = useState(0);
 
     useEffect(() => {
-        axios.get("/api/AppProject")
-            .then(response => {
-                const data = Array.isArray(response.data.$values) ? response.data.$values : [];
-                setProjects(data);
-            })
-            .finally(() => setLoading(false));
+        getProjects();
     }, []);
 
-    const handleEditClick = (id: number) => {
-        axios.get(`/api/AppProject/${id}`)
-            .then(response => {
-                setSelectedProject(response.data);
-            })
-            .catch(error => {
-                console.error("Error fetching project:", error);
-            });
+    const getProjects = () => {
+        axios.get('/api/appproject')
+            .then(response => setProjects(response.data))
+            .catch(error => console.error('Error fetching projects:', error));
+    }
+
+    const handleCreate = () => {
+        setShowCreateModal(true);
+        console.log("Create new project");
     };
 
-    const handleCreateClick = () => {
-        setShowCreateModal(true);
-        setSelectedProject(null);
+    const handleEdit = (id: number) => {
+        console.log("Edit project with ID:", id);
+        setProjectToEdit(id);
+        setShowEditModal(true);
+    };
+
+    const handleDelete = (id: number) => {
+        const project = projects.find(p => p.id === id);
+        if (project) {
+            setProjectToDelete(project);
+            setShowDeleteModal(true);
+        }
+    };
+
+    const confirmDelete = () => {
+        if (projectToDelete) {
+            axios.delete(`/api/appproject/${projectToDelete.id}`)
+                .then(() => {
+                    setProjects(projects.filter(project => project.id !== projectToDelete.id));
+                    setShowDeleteModal(false);
+                    setProjectToDelete(null);
+                })
+                .catch(error => {
+                    console.error('Error deleting project:', error);
+                    setShowDeleteModal(false);
+                });
+        }
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setProjectToDelete(null);
+    };
+
+    const closeEditModal = () => {
+        setShowCreateModal(false);
+        setShowEditModal(false);
+        getProjects();
     };
 
     return (
-        <div className="container mt-4">
-            <h2 className="text-center mb-4">Applications</h2>
-            <div className="d-flex justify-content-end mb-3">
-                <Button variant="success" onClick={handleCreateClick}>
-                    Create Application
-                </Button>
-            </div>
-            {loading ? (
-                <div className="d-flex justify-content-center">
-                    <Spinner animation="border" />
-                </div>
-            ) : (
-                <Card>
-                    <Card.Body>
-                        <div className="table-responsive">
-                            <Table striped bordered hover size="sm">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Project Name</th>
-                                        <th>Project Ref</th>
-                                        <th>Project Location</th>
-                                        <th>App Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {projects.map((project) => (
-                                        <tr key={project.id}>
-                                            <td>{project.id}</td>
-                                            <td>{project.name || "N/A"}</td>
-                                            <td>{project.reference || "N/A"}</td>
-                                            <td>{project.location || "N/A"}</td>
-                                            <td>{project.statusLevel || "N/A"}</td>
-                                            <td>
-                                                <Button variant="primary" onClick={() => handleEditClick(project.id)}>
-                                                    Edit
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                        </div>
-                    </Card.Body>
-                </Card>
-            )}
-
-            {(selectedProject || showCreateModal) && (
-                <EditProjectModal
-                    show={selectedProject !== null || showCreateModal}
-                    onHide={() => {
-                        setSelectedProject(null);
-                        setShowCreateModal(false);
-                    }}
-                    project={selectedProject}
+        <Container className="mt-4">
+            {showEditModal && (
+                <ApplicationProjectModal
+                    isEditing={true}
+                    appId={projectToEdit}
+                    show={showEditModal}
+                    handleClose={closeEditModal}
                 />
             )}
-        </div>
+            {showCreateModal && (
+                <ApplicationProjectModal
+                    isEditing={false}
+                    appId={0}
+                    show={showCreateModal}
+                    handleClose={closeEditModal}
+                />
+            )}
+
+            <h1>Project List</h1>
+            <Button variant="primary" onClick={handleCreate} className="mb-3">
+                Create Application
+            </Button>
+
+            <div className="table-responsive">
+                <Table striped bordered hover responsive>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Reference</th>
+                            <th>Location</th>
+                            <th>Status Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {projects.map(project => (
+                            <tr key={project.id}>
+                                <td>{project.name}</td>
+                                <td>{project.reference}</td>
+                                <td>{project.location}</td>
+                                <td>{project.statusLevel}</td>
+                                <td>
+                                    <Button variant="warning" onClick={() => handleEdit(project.id)}>Edit</Button>
+                                    <Button variant="danger" onClick={() => handleDelete(project.id)}>Delete</Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </div>
+
+            <Modal show={showDeleteModal} onHide={cancelDelete}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this project?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={cancelDelete}>Cancel</Button>
+                    <Button variant="danger" onClick={confirmDelete}>Confirm</Button>
+                </Modal.Footer>
+            </Modal>
+        </Container>
     );
 };
 
-export default AppProjectTable;
+export default ProjectPage;

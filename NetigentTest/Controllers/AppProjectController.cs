@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NetigentTest.Models.BindingModels;
 using NetigentTest.Models.DBModels;
+using NetigentTest.Models.ViewModels;
 using NetigentTest.Services;
 
 namespace NetigentTest.Controllers
@@ -17,14 +18,14 @@ namespace NetigentTest.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AppProject>> Create([FromBody] CreateAppProjectBindingModel model)
+        public async Task<ActionResult<AppProject>> Create([FromBody] CreateEditAppProjectBindingModel model)
         {
             var appProject = await _appProjectService.CreateAsync(model);
-            return CreatedAtAction(nameof(GetOne), new { id = appProject.Id }, appProject);
+            return Ok(appProject);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<AppProject>> Edit(int id, [FromBody] EditAppProjectBindingModel model)
+        public async Task<ActionResult<AppProject>> Edit(int id, [FromBody] CreateEditAppProjectBindingModel model)
         {
             model.Id = id;
             var appProject = await _appProjectService.EditAsync(model);
@@ -41,7 +42,7 @@ namespace NetigentTest.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AppProject>> GetOne(int id)
+        public async Task<ActionResult<AppProjectIndividualViewModel>> GetOne(int id)
         {
             var appProject = await _appProjectService.GetAsync(id);
             if (appProject == null) return NotFound();
@@ -49,7 +50,7 @@ namespace NetigentTest.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<AppProject>>> GetAll()
+        public async Task<ActionResult<List<AppProjectSearchViewModel>>> GetAll()
         {
             var appProjects = await _appProjectService.GetAsync();
             return Ok(appProjects);

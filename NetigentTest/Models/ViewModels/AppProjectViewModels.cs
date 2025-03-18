@@ -23,10 +23,7 @@ namespace NetigentTest.Models.ViewModels
         public DateTime? CompletedDt { get; set; }
         public decimal ProjectValue { get; set; } = 0;
         public int StatusId { get; set; } = 0;
-        public string? StatusLevel { get; set; }
         public string? Notes { get; set; }
-        public DateTime? Modified { get; set; }
-        public bool IsDeleted { get; set; }
-        public int InquiriesCount { get; set; }
+        public List<InquiryViewModel> Inquiries { get; set; }
     }
 }
